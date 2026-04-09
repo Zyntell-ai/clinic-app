@@ -319,7 +319,7 @@ export async function createGCalEvent(appointment) {
   // Call your backend endpoint (which has OAuth service account)
   // Replace with your actual backend URL
   try {
-    const res = await fetch('https://clinic-app-backend-hqwg.onrender.com/api/gcal-create-event', {
+    const res = await fetch('https://clinic-app-backend-ph3j.onrender.com/api/gcal-create-event', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
