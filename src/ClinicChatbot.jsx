@@ -114,32 +114,30 @@ const parseMarkdown = (text) =>
     .replace(/\n/g, "<br/>");
 
 const QUICK_REPLIES = [
-  { label: "📅 Book Appointment", text: "I want to book an appointment" },
-  { label: "🕐 Working Hours",    text: "What are your working hours?" },
-  { label: "👨‍⚕️ Our Doctors",      text: "Which doctors are available?" },
-  { label: "💊 Services",         text: "What services do you offer?" },
-  { label: "🚨 Emergency",        text: "Emergency contact number?" },
-  { label: "💰 Fees",             text: "What are the consultation fees?" },
+  { label: "📅 Book",    text: "I want to book an appointment" },
+  { label: "🕐 Hours",   text: "What are your working hours?" },
+  { label: "👨‍⚕️ Doctors", text: "Which doctors are available?" },
+  { label: "💊 Services",text: "What services do you offer?" },
+  { label: "🚨 Emergency",text: "Emergency contact number?" },
+  { label: "💰 Fees",    text: "What are the consultation fees?" },
 ];
-
-const avatarStyle = (role) => ({
-  width: 32, height: 32, borderRadius: 10, flexShrink: 0, marginTop: 2,
-  background: role === "user" ? "#0a7c73" : "#d4f0ed",
-  display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16,
-});
-
-const bubbleBase = {
-  padding: "12px 15px", borderRadius: 18, fontSize: 14, lineHeight: 1.6, maxWidth: "78%",
-};
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 function TypingDots() {
   return (
     <div style={{ display: "flex", gap: 10 }}>
-      <div style={avatarStyle("bot")}>🏥</div>
-      <div style={{ ...bubbleBase, padding: "14px 18px", display: "flex", gap: 5, alignItems: "center", background: "#fff", boxShadow: "0 2px 12px rgba(0,0,0,.06)" }}>
+      <div className="chat-avatar bot-avatar">🏥</div>
+      <div style={{
+        padding: "14px 18px", borderRadius: 18, borderBottomLeftRadius: 4,
+        display: "flex", gap: 5, alignItems: "center",
+        background: "#fff", boxShadow: "0 2px 12px rgba(0,0,0,.06)",
+      }}>
         {[0, 0.2, 0.4].map((d, i) => (
-          <span key={i} style={{ width: 7, height: 7, borderRadius: "50%", background: "#0bbfb3", display: "block", animation: `bounce 1.2s ${d}s infinite ease-in-out` }} />
+          <span key={i} style={{
+            width: 7, height: 7, borderRadius: "50%",
+            background: "#0bbfb3", display: "block",
+            animation: `chatBounce 1.2s ${d}s infinite ease-in-out`,
+          }} />
         ))}
       </div>
     </div>
@@ -148,14 +146,27 @@ function TypingDots() {
 
 function BookingCard({ data }) {
   return (
-    <div style={{ background: "linear-gradient(135deg,#e6f5f4,#f0fffe)", border: "1.5px solid #0a7c7355", borderRadius: 16, padding: "14px 16px", fontSize: 13.5, lineHeight: 1.8, marginTop: 6, color: "#0d2926" }}>
-      <div style={{ fontWeight: 700, color: "#0a7c73", marginBottom: 10, fontSize: 15 }}>✅ Appointment Confirmed!</div>
-      <div>📋 <strong>Ref ID:</strong> {data.id}</div>
-      <div>👤 <strong>Patient:</strong> {data.patient_name}</div>
-      <div>👨‍⚕️ <strong>Doctor:</strong> {data.doctor}</div>
-      <div>📅 <strong>Date:</strong> {new Date(data.date + "T00:00:00").toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>
-      <div>🕐 <strong>Time:</strong> {data.time_slot}</div>
-      <div style={{ marginTop: 10, padding: "8px 10px", background: "rgba(10,124,115,.08)", borderRadius: 8, fontSize: 12.5, color: "#0a7c73" }}>
+    <div style={{
+      background: "linear-gradient(135deg,#e6f5f4,#f0fffe)",
+      border: "1.5px solid rgba(10,124,115,.25)",
+      borderRadius: 16, padding: "16px 18px",
+      fontSize: 13.5, lineHeight: 1.8, marginTop: 8, color: "#0d2926",
+    }}>
+      <div style={{ fontWeight: 700, color: "#0a7c73", marginBottom: 12, fontSize: 15, display: "flex", alignItems: "center", gap: 6 }}>
+        ✅ Appointment Confirmed!
+      </div>
+      <div style={{ display: "grid", gap: 4 }}>
+        <div>📋 <strong>Ref ID:</strong> {data.id}</div>
+        <div>👤 <strong>Patient:</strong> {data.patient_name}</div>
+        <div>👨‍⚕️ <strong>Doctor:</strong> {data.doctor}</div>
+        <div>📅 <strong>Date:</strong> {new Date(data.date + "T00:00:00").toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>
+        <div>🕐 <strong>Time:</strong> {data.time_slot}</div>
+      </div>
+      <div style={{
+        marginTop: 12, padding: "8px 12px",
+        background: "rgba(10,124,115,.08)", borderRadius: 10,
+        fontSize: 12.5, color: "#0a7c73",
+      }}>
         📲 WhatsApp confirmation sent to {data.phone}
       </div>
     </div>
@@ -164,17 +175,22 @@ function BookingCard({ data }) {
 
 function DoctorPicker({ onSelect }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8, width: "100%" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8, width: "100%" }}>
       {DOCTORS.map((doc) => (
         <button key={doc.name} onClick={() => onSelect(doc.name)}
-          style={{ textAlign: "left", padding: "10px 14px", borderRadius: 12, border: "1.5px solid #c8e6e3", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 10, transition: "all .2s", fontFamily: "'DM Sans',sans-serif", width: "100%" }}
-          onMouseEnter={e => { e.currentTarget.style.background = "#e6f5f4"; e.currentTarget.style.borderColor = "#0a7c73"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#c8e6e3"; }}
+          className="doctor-pick-btn"
+          style={{
+            textAlign: "left", padding: "10px 14px", borderRadius: 12,
+            border: "1.5px solid #c8e6e3", background: "#fff",
+            cursor: "pointer", display: "flex", alignItems: "center",
+            gap: 10, fontFamily: "'DM Sans',sans-serif", width: "100%",
+            transition: "all .18s",
+          }}
         >
           <span style={{ width: 10, height: 10, borderRadius: "50%", background: doc.color, display: "inline-block", flexShrink: 0 }} />
           <div>
             <div style={{ fontWeight: 600, fontSize: 13, color: "#0d2926" }}>{doc.name}</div>
-            <div style={{ fontSize: 11.5, color: "#5a7a77" }}>{doc.dept} · {doc.days.join("/")} </div>
+            <div style={{ fontSize: 11.5, color: "#5a7a77" }}>{doc.dept} · {doc.days.join("/")}</div>
           </div>
         </button>
       ))}
@@ -187,9 +203,14 @@ function SlotPicker({ slots, onSelect }) {
     <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
       {slots.map((slot) => (
         <button key={slot} onClick={() => onSelect(slot)}
-          style={{ padding: "8px 14px", borderRadius: 10, border: "1.5px solid #c8e6e3", background: "#fff", color: "#0a7c73", fontWeight: 600, fontSize: 13, cursor: "pointer", transition: "all .2s", fontFamily: "'DM Sans',sans-serif" }}
-          onMouseEnter={e => { e.currentTarget.style.background = "#0a7c73"; e.currentTarget.style.color = "#fff"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.color = "#0a7c73"; }}
+          className="slot-btn"
+          style={{
+            padding: "8px 14px", borderRadius: 10,
+            border: "1.5px solid #c8e6e3", background: "#fff",
+            color: "#0a7c73", fontWeight: 600, fontSize: 13,
+            cursor: "pointer", transition: "all .18s",
+            fontFamily: "'DM Sans',sans-serif",
+          }}
         >
           🕐 {slot}
         </button>
@@ -200,13 +221,13 @@ function SlotPicker({ slots, onSelect }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function ClinicChatbot() {
-  const [messages,    setMessages]    = useState([]);
-  const [geminiHistory, setGeminiHistory] = useState([]); // [{role, parts:[{text}]}]
-  const [input,       setInput]       = useState("");
-  const [loading,     setLoading]     = useState(false);
-  const [bookingCard, setBookingCard] = useState(null);
-  const [bookingFlow, setBookingFlow] = useState(null);
-  const [availSlots,  setAvailSlots]  = useState([]);
+  const [messages,       setMessages]       = useState([]);
+  const [geminiHistory,  setGeminiHistory]  = useState([]);
+  const [input,          setInput]          = useState("");
+  const [loading,        setLoading]        = useState(false);
+  const [bookingCard,    setBookingCard]    = useState(null);
+  const [bookingFlow,    setBookingFlow]    = useState(null);
+  const [availSlots,     setAvailSlots]     = useState([]);
   const bottomRef   = useRef(null);
   const textareaRef = useRef(null);
 
@@ -345,17 +366,12 @@ export default function ClinicChatbot() {
 
     setLoading(true);
 
-    // ── Try Gemini API ──────────────────────────────────────────────────────
     if (hasGeminiKey) {
-      const newHistory = [
-        ...geminiHistory,
-        { role: "user", parts: [{ text: msg }] },
-      ];
+      const newHistory = [...geminiHistory, { role: "user", parts: [{ text: msg }] }];
       const ok = await callGemini(newHistory, msg);
       if (ok) return;
     }
 
-    // ── Rule-based fallback ─────────────────────────────────────────────────
     await new Promise((r) => setTimeout(r, 600));
     const rule = getRuleResponse(msg);
     if (rule?.action === "start_booking") {
@@ -369,8 +385,6 @@ export default function ClinicChatbot() {
     setLoading(false);
   };
 
-  // ─── Gemini API call ───────────────────────────────────────────────────────
-  // Uses gemini-2.0-flash — fastest, free tier, 15 RPM, 1M tokens/day free
   const callGemini = async (history, originalMsg) => {
     try {
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
@@ -380,24 +394,17 @@ export default function ClinicChatbot() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          system_instruction: {
-            parts: [{ text: SYSTEM_INSTRUCTION }],
-          },
+          system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
           contents: history,
-          generationConfig: {
-            maxOutputTokens: 512,
-            temperature: 0.7,
-          },
+          generationConfig: { maxOutputTokens: 512, temperature: 0.7 },
         }),
       });
 
       const data = await res.json();
 
-      // Handle API errors gracefully
       if (data.error) {
         console.warn("Gemini API error:", data.error.message);
         setLoading(false);
-        // Fall to rules
         const rule = getRuleResponse(originalMsg);
         if (rule?.action === "start_booking") {
           setBookingFlow({ step: "doctor", data: {} });
@@ -411,14 +418,8 @@ export default function ClinicChatbot() {
       }
 
       const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I didn't catch that. Could you please rephrase? 😊";
+      setGeminiHistory([...history, { role: "model", parts: [{ text: reply }] }]);
 
-      // Update Gemini history with both user msg + assistant response
-      setGeminiHistory([
-        ...history,
-        { role: "model", parts: [{ text: reply }] },
-      ]);
-
-      // Check if Gemini wants to start booking flow
       if (/book.*appointment|schedule.*appointment|make.*appointment/i.test(reply) && !bookingFlow) {
         setBookingFlow({ step: "doctor", data: {} });
         addBotMessage(reply + "\n\nPlease select your preferred doctor 👇", { widget: "doctor_picker" });
@@ -443,89 +444,344 @@ export default function ClinicChatbot() {
     e.target.style.height = Math.min(e.target.scrollHeight, 80) + "px";
   };
 
+  const canSend = input.trim() && !loading;
+
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
-        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-        body { font-family:'DM Sans',sans-serif; background:linear-gradient(135deg,#e8f7f6,#f0fffe,#e4f3f1); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
-        @keyframes fadeUp  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes bounce  { 0%,80%,100%{transform:translateY(0);opacity:.5} 40%{transform:translateY(-6px);opacity:1} }
-        @keyframes rise    { from{opacity:0;transform:translateY(30px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
-        @keyframes pulse   { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(.8)} }
-        ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-thumb{background:#c8e6e3;border-radius:4px}
-        .qr-btn:hover:not(:disabled){background:#0a7c73!important;color:#fff!important;border-color:#0a7c73!important;transform:translateY(-1px)}
-        .send-btn:hover:not(:disabled){background:#0bbfb3!important;transform:scale(1.05)}
+        /* ── Chatbot layout ── */
+        .chatbot-page {
+          flex: 1;
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          padding: 20px 16px 24px;
+          background: linear-gradient(160deg, #e8f7f6 0%, #f0fffe 50%, #e4f3f1 100%);
+          min-height: calc(100dvh - 56px);
+        }
+        @media (max-width: 600px) {
+          .chatbot-page {
+            padding: 0;
+            align-items: stretch;
+            background: #f6fafa;
+          }
+        }
+
+        .chatbot-container {
+          width: 100%;
+          max-width: 480px;
+          height: 760px;
+          max-height: calc(100dvh - 56px - 40px);
+          border-radius: 28px;
+          background: #fff;
+          box-shadow: 0 8px 48px rgba(10,124,115,.14), 0 2px 0 #c8e6e3;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          animation: chatRise .55s cubic-bezier(.22,1,.36,1) both;
+          font-family: 'DM Sans', sans-serif;
+          border: 1px solid rgba(10,124,115,.1);
+        }
+        @media (max-width: 600px) {
+          .chatbot-container {
+            max-width: 100%;
+            height: calc(100dvh - 56px);
+            max-height: none;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+            animation: none;
+          }
+        }
+
+        /* ── Chat messages ── */
+        .chat-msgs {
+          flex: 1;
+          overflow-y: auto;
+          padding: 20px 16px 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          background: #f6fafa;
+          scroll-behavior: smooth;
+        }
+        @media (max-width: 600px) {
+          .chat-msgs { padding: 16px 12px 10px; }
+        }
+
+        /* ── Avatars ── */
+        .chat-avatar {
+          width: 32px; height: 32px;
+          border-radius: 10px;
+          flex-shrink: 0; margin-top: 2px;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 15px;
+        }
+        .user-avatar { background: #0a7c73; }
+        .bot-avatar  { background: #d4f0ed; }
+
+        /* ── Bubbles ── */
+        .chat-bubble {
+          padding: 11px 14px;
+          border-radius: 18px;
+          font-size: 14px;
+          line-height: 1.6;
+          max-width: 80%;
+          word-break: break-word;
+        }
+        .user-bubble {
+          background: #0a7c73;
+          color: #fff;
+          border-bottom-right-radius: 4px;
+          box-shadow: 0 2px 12px rgba(10,124,115,.2);
+        }
+        .bot-bubble {
+          background: #fff;
+          color: #0d2926;
+          border-bottom-left-radius: 4px;
+          box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        }
+
+        /* ── Message row ── */
+        .msg-row {
+          display: flex;
+          gap: 8px;
+          animation: chatFadeUp .3s ease both;
+        }
+        .msg-row.user { flex-direction: row-reverse; }
+
+        .msg-col {
+          display: flex;
+          flex-direction: column;
+          max-width: 84%;
+        }
+        .msg-col.user { align-items: flex-end; }
+        .msg-col.bot  { align-items: flex-start; }
+
+        .msg-time {
+          font-size: 10.5px;
+          margin-top: 4px;
+          padding: 0 4px;
+        }
+        .user .msg-time { color: rgba(0,0,0,.3); }
+        .bot .msg-time  { color: #5a7a77; }
+
+        /* ── Quick replies ── */
+        .qr-bar {
+          display: flex;
+          gap: 6px;
+          padding: 6px 14px 8px;
+          background: #f6fafa;
+          overflow-x: auto;
+          flex-shrink: 0;
+          scrollbar-width: none;
+          -webkit-overflow-scrolling: touch;
+        }
+        .qr-bar::-webkit-scrollbar { display: none; }
+
+        .qr-btn {
+          border: 1.5px solid #c8e6e3;
+          background: #fff;
+          color: #0a7c73;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 12.5px;
+          font-weight: 500;
+          padding: 7px 13px;
+          border-radius: 20px;
+          cursor: pointer;
+          transition: all .18s;
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+        .qr-btn:hover:not(:disabled) {
+          background: #0a7c73;
+          color: #fff;
+          border-color: #0a7c73;
+          transform: translateY(-1px);
+        }
+        .qr-btn:disabled { opacity: .55; cursor: not-allowed; }
+
+        /* ── Input area ── */
+        .chat-input-area {
+          padding: 12px 14px;
+          padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+          background: #fff;
+          border-top: 1px solid #c8e6e3;
+          display: flex;
+          gap: 8px;
+          align-items: flex-end;
+          flex-shrink: 0;
+        }
+        .chat-input-wrap {
+          flex: 1;
+          background: #f6fafa;
+          border: 1.5px solid #c8e6e3;
+          border-radius: 18px;
+          padding: 9px 14px;
+          display: flex;
+          align-items: center;
+          transition: border-color .18s;
+        }
+        .chat-input-wrap:focus-within {
+          border-color: #0a7c73;
+          background: #fff;
+        }
+        .chat-textarea {
+          flex: 1; border: none; background: transparent;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 14px; color: #0d2926;
+          resize: none; outline: none;
+          max-height: 80px; line-height: 1.45;
+        }
+        .chat-textarea::placeholder { color: #9ab8b5; }
+
+        .send-btn {
+          width: 44px; height: 44px;
+          border-radius: 14px; border: none;
+          cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; transition: all .2s;
+          outline: none;
+        }
+        .send-btn:hover:not(:disabled) { transform: scale(1.06); }
+        .send-btn:disabled { cursor: not-allowed; }
+
+        /* ── Doctor & slot buttons hover ── */
+        .doctor-pick-btn:hover {
+          background: #e6f5f4 !important;
+          border-color: #0a7c73 !important;
+        }
+        .slot-btn:hover {
+          background: #0a7c73 !important;
+          color: #fff !important;
+        }
+
+        /* ── Animations ── */
+        @keyframes chatRise    { from{opacity:0;transform:translateY(24px) scale(.98)} to{opacity:1;transform:translateY(0) scale(1)} }
+        @keyframes chatFadeUp  { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes chatBounce  { 0%,80%,100%{transform:translateY(0);opacity:.5} 40%{transform:translateY(-6px);opacity:1} }
+        @keyframes chatPulse   { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(.8)} }
       `}</style>
 
-      <div style={{ width: "100%", maxWidth: 480, height: 760, borderRadius: 28, background: "#fff", boxShadow: "0 8px 40px rgba(10,124,115,.12), 0 2px 0 #c8e6e3", display: "flex", flexDirection: "column", overflow: "hidden", animation: "rise .6s cubic-bezier(.22,1,.36,1) both", fontFamily: "'DM Sans',sans-serif" }}>
+      <div className="chatbot-page">
+        <div className="chatbot-container">
 
-        {/* ── HEADER ── */}
-        <div style={{ background: "linear-gradient(135deg,#0a7c73,#0bbfb3)", padding: "22px 24px 20px", display: "flex", alignItems: "center", gap: 14, flexShrink: 0, position: "relative", overflow: "hidden" }}>
-          <div style={{ position: "absolute", width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,.07)", top: -70, right: -50 }} />
-          <div style={{ width: 52, height: 52, borderRadius: 16, background: "rgba(255,255,255,.18)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, flexShrink: 0, border: "1.5px solid rgba(255,255,255,.3)" }}>🏥</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontFamily: "'DM Serif Display',serif", color: "#fff", fontSize: 18 }}>HealthPlus Clinic</div>
-            <div style={{ color: "rgba(255,255,255,.75)", fontSize: 12.5, marginTop: 2 }}>Banjara Hills, Hyderabad</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,.85)", fontSize: 12, fontWeight: 500, marginTop: 5 }}>
-              <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#7fffd4", boxShadow: "0 0 6px #7fffd4", animation: "pulse 2s infinite", display: "inline-block" }} />
-              Meera — AI Receptionist {hasGeminiKey ? "✨" : "(Demo Mode)"}
-            </div>
-          </div>
-          <div style={{ background: "rgba(255,255,255,.2)", border: "1px solid rgba(255,255,255,.3)", color: "#fff", fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 20 }}>24 / 7</div>
-        </div>
+          {/* ── HEADER ── */}
+          <div style={{
+            background: "linear-gradient(135deg,#0a7c73,#0bbfb3)",
+            padding: "20px 22px 18px",
+            display: "flex", alignItems: "center", gap: 14,
+            flexShrink: 0, position: "relative", overflow: "hidden",
+          }}>
+            {/* Decorative circles */}
+            <div style={{ position:"absolute", width:180, height:180, borderRadius:"50%", background:"rgba(255,255,255,.06)", top:-60, right:-40, pointerEvents:"none" }} />
+            <div style={{ position:"absolute", width:100, height:100, borderRadius:"50%", background:"rgba(255,255,255,.04)", bottom:-50, left:60, pointerEvents:"none" }} />
 
-        {/* ── MESSAGES ── */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "20px 18px 12px", display: "flex", flexDirection: "column", gap: 14, background: "#f6fafa" }}>
-          {messages.map((msg, i) => (
-            <div key={i} style={{ display: "flex", gap: 10, flexDirection: msg.role === "user" ? "row-reverse" : "row", animation: "fadeUp .3s ease both" }}>
-              <div style={avatarStyle(msg.role)}>{msg.role === "user" ? "👤" : "🏥"}</div>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: msg.role === "user" ? "flex-end" : "flex-start", maxWidth: "82%" }}>
-                <div style={{ ...bubbleBase, background: msg.role === "user" ? "#0a7c73" : "#fff", color: msg.role === "user" ? "#fff" : "#0d2926", borderBottomRightRadius: msg.role === "user" ? 4 : 18, borderBottomLeftRadius: msg.role === "user" ? 18 : 4, boxShadow: msg.role === "user" ? "none" : "0 2px 12px rgba(0,0,0,.06)" }}
-                  dangerouslySetInnerHTML={{ __html: msg.role === "user" ? msg.content.replace(/</g, "&lt;") : parseMarkdown(msg.content) }}
-                />
-                {msg.widget === "doctor_picker" && <DoctorPicker onSelect={(name) => send(name)} />}
-                {msg.widget === "slot_picker"   && <SlotPicker slots={msg.slots || availSlots} onSelect={(s) => send(s)} />}
-                <div style={{ fontSize: 10.5, color: msg.role === "user" ? "rgba(255,255,255,.55)" : "#5a7a77", marginTop: 4, padding: "0 4px" }}>
-                  {msg.role === "user" ? msg.time : `Meera · ${msg.time}`}
-                </div>
-                {bookingCard && i === messages.length - 1 && msg.role === "assistant" && <BookingCard data={bookingCard} />}
+            <div style={{
+              width: 50, height: 50, borderRadius: 16,
+              background: "rgba(255,255,255,.18)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 24, flexShrink: 0,
+              border: "1.5px solid rgba(255,255,255,.3)",
+              boxShadow: "0 4px 12px rgba(0,0,0,.12)",
+            }}>🏥</div>
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontFamily: "'DM Serif Display',serif", color: "#fff", fontSize: 17, letterSpacing: "-.2px" }}>
+                HealthPlus Clinic
+              </div>
+              <div style={{ color: "rgba(255,255,255,.72)", fontSize: 12, marginTop: 2 }}>
+                Banjara Hills, Hyderabad
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 6 }}>
+                <span style={{
+                  width: 7, height: 7, borderRadius: "50%",
+                  background: "#7fffd4", boxShadow: "0 0 6px #7fffd4",
+                  animation: "chatPulse 2s infinite", display: "inline-block",
+                }} />
+                <span style={{ color: "rgba(255,255,255,.82)", fontSize: 11.5, fontWeight: 500 }}>
+                  Meera — AI Receptionist {hasGeminiKey ? "✨" : "(Demo)"}
+                </span>
               </div>
             </div>
-          ))}
-          {loading && <TypingDots />}
-          <div ref={bottomRef} />
-        </div>
 
-        {/* ── QUICK REPLIES ── */}
-        {!bookingFlow && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, padding: "4px 18px 8px", background: "#f6fafa", flexShrink: 0 }}>
-            {QUICK_REPLIES.map((qr) => (
-              <button key={qr.text} className="qr-btn" onClick={() => send(qr.text)} disabled={loading}
-                style={{ border: "1.5px solid #c8e6e3", background: "#fff", color: "#0a7c73", fontFamily: "'DM Sans',sans-serif", fontSize: 12.5, fontWeight: 500, padding: "7px 14px", borderRadius: 20, cursor: "pointer", transition: "all .2s" }}>
-                {qr.label}
-              </button>
+            <div style={{
+              background: "rgba(255,255,255,.18)",
+              border: "1px solid rgba(255,255,255,.28)",
+              color: "#fff", fontSize: 11, fontWeight: 700,
+              padding: "4px 10px", borderRadius: 20, flexShrink: 0,
+              letterSpacing: ".5px",
+            }}>24 / 7</div>
+          </div>
+
+          {/* ── MESSAGES ── */}
+          <div className="chat-msgs">
+            {messages.map((msg, i) => (
+              <div key={i} className={`msg-row ${msg.role === "user" ? "user" : "bot"}`}>
+                <div className={`chat-avatar ${msg.role === "user" ? "user-avatar" : "bot-avatar"}`}>
+                  {msg.role === "user" ? "👤" : "🏥"}
+                </div>
+                <div className={`msg-col ${msg.role === "user" ? "user" : "bot"}`}>
+                  <div
+                    className={`chat-bubble ${msg.role === "user" ? "user-bubble" : "bot-bubble"}`}
+                    dangerouslySetInnerHTML={{
+                      __html: msg.role === "user"
+                        ? msg.content.replace(/</g, "&lt;")
+                        : parseMarkdown(msg.content),
+                    }}
+                  />
+                  {msg.widget === "doctor_picker" && <DoctorPicker onSelect={(name) => send(name)} />}
+                  {msg.widget === "slot_picker"   && <SlotPicker slots={msg.slots || availSlots} onSelect={(s) => send(s)} />}
+                  <div className="msg-time">
+                    {msg.role === "user" ? msg.time : `Meera · ${msg.time}`}
+                  </div>
+                  {bookingCard && i === messages.length - 1 && msg.role === "assistant" && (
+                    <BookingCard data={bookingCard} />
+                  )}
+                </div>
+              </div>
             ))}
+            {loading && <TypingDots />}
+            <div ref={bottomRef} />
           </div>
-        )}
 
-        {/* ── INPUT ── */}
-        <div style={{ padding: "14px 16px 18px", background: "#fff", borderTop: "1px solid #c8e6e3", display: "flex", gap: 10, alignItems: "flex-end", flexShrink: 0 }}>
-          <div style={{ flex: 1, background: "#f6fafa", border: "1.5px solid #c8e6e3", borderRadius: 18, padding: "10px 16px", display: "flex", alignItems: "center" }}>
-            <textarea ref={textareaRef} value={input}
-              onChange={(e) => { setInput(e.target.value); autoResize(e); }}
-              onKeyDown={handleKey}
-              placeholder={bookingFlow ? "Type your answer…" : "Ask me anything…"}
-              rows={1}
-              style={{ flex: 1, border: "none", background: "transparent", fontFamily: "'DM Sans',sans-serif", fontSize: 14, color: "#0d2926", resize: "none", outline: "none", maxHeight: 80, lineHeight: 1.4 }}
-            />
+          {/* ── QUICK REPLIES ── */}
+          {!bookingFlow && (
+            <div className="qr-bar">
+              {QUICK_REPLIES.map((qr) => (
+                <button key={qr.text} className="qr-btn" onClick={() => send(qr.text)} disabled={loading}>
+                  {qr.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* ── INPUT ── */}
+          <div className="chat-input-area">
+            <div className="chat-input-wrap">
+              <textarea
+                ref={textareaRef}
+                className="chat-textarea"
+                value={input}
+                onChange={(e) => { setInput(e.target.value); autoResize(e); }}
+                onKeyDown={handleKey}
+                placeholder={bookingFlow ? "Type your answer…" : "Ask me anything…"}
+                rows={1}
+              />
+            </div>
+            <button
+              className="send-btn"
+              onClick={() => send(input)}
+              disabled={!canSend}
+              style={{ background: canSend ? "#0a7c73" : "#c8e6e3" }}
+            >
+              <svg viewBox="0 0 24 24" width={18} height={18} fill="white">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+              </svg>
+            </button>
           </div>
-          <button className="send-btn" onClick={() => send(input)} disabled={loading || !input.trim()}
-            style={{ width: 46, height: 46, borderRadius: 14, background: (!input.trim() || loading) ? "#c8e6e3" : "#0a7c73", border: "none", cursor: (!input.trim() || loading) ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all .2s" }}>
-            <svg viewBox="0 0 24 24" width={20} height={20} fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
-          </button>
+
         </div>
-
       </div>
     </>
   );
